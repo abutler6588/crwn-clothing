@@ -2,16 +2,16 @@ import React from 'react';
 
 import './cat-item.styles.scss';
 
-const CartItem = ({ item: { imageUrl, price, name, quantity} }) => (
+const CartItem = ({ item: { imageUrl, price, name, quantity } }) => (
     <div className='cart-item'>
-        <img src={imageUrl} alt='item' />
-    <div className='item-details'>
+      <img src={imageUrl} alt='item' />
+      <div className='item-details'>
         <span className='name'>{name}</span>
         <span className='price'>
-            {quantity} x {price}
+          {quantity} x ${price}
         </span>
+      </div>
     </div>
-    </div>
-);
-
-export default CartItem;
+  );
+  
+  export default CartItem;
