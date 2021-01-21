@@ -17,19 +17,18 @@ firebase.initializeApp(config);
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
   if (!userAuth) return;
-
   const userRef = firestore.doc(`users/${userAuth.uid}`);
-
+    
   const snapShot = await userRef.get();
-  //if this snapShot doesnt exist
-  if(!snapShot.exists){
+
+
+    if(!snapShot.exists){
     const { displayName, email } = userAuth;
     const createdAt = new Date();
-//then create the data to add into DB in the specified places, create a new user using the data from our userAuth
     try {
       await userRef.set({
         displayName,
-        email, 
+        email,
         createdAt,
         ...additionalData
       });
@@ -39,6 +38,36 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   }
 
   return userRef;
+};
+
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+  const collectionRef = firestore.collection(collectionKey);
+  
+  const batch = firestore.batch();
+  objectsToAdd.forEach(obj => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+
+  return await batch.commit();
+};
+
+export const convertCollectionSnapshotToMap = collections => {
+  const transformedCollection = collections.docs.map(doc => {
+    const {title, items} = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title, 
+      items
+    };
+  });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 };
 
 export const auth = firebase.auth();
